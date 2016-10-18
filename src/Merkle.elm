@@ -696,8 +696,8 @@ hashHlp h lh rh fs =
 
 
 log2 : Int -> Int
-log2 x =
-    logBase 2.0 (x |> toFloat) |> truncate
+log2 =
+    toFloat >> logBase 2.0 >> truncate
 
 
 ceilPow : Int -> Int
