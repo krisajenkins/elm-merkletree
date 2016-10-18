@@ -147,13 +147,12 @@ fromList :
     -> Decoder a
     -> List a
     -> Tree a
-fromList hashfs encode decode list =
+fromList hashfs encode decode =
     let
         init =
             initialize hashfs encode decode
     in
-        list
-            |> List.foldl (\x t -> t |> insert x) init
+        List.foldl (\x t -> t |> insert x) init
 
 
 {-| Adds an element to the (`Merkle.Tree a`) in logarithmic time. It's important
@@ -257,9 +256,8 @@ order to maintain consistency and to be able to recreate a tree.
 
 -}
 insertFromList : Tree a -> List a -> Tree a
-insertFromList tree list =
-    list
-        |> List.foldl (\x a -> a |> insert x) tree
+insertFromList =
+    List.foldl (\x a -> a |> insert x)
 
 
 {-| Checks if the element is in the (`Merkle.Tree a`). As an element can appear
