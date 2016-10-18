@@ -592,10 +592,10 @@ initbranch :
 initbranch n x hash encode =
     let
         hl =
-            (ensure hash) |> combine (stringify x encode)
+            ensure hash |> combine (stringify x encode)
 
         hb h =
-            (ensure hash) |> combine (h ++ h)
+            ensure hash |> combine (h ++ h)
 
         rec i h acc =
             case i of
