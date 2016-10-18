@@ -46,42 +46,15 @@ changed afterwards which ensures data consistency.
 -}
 
 -- ELM-LANG LIBS
+-- OTHER LIBS
 
 import Basics exposing (max)
 import Bitwise exposing (and, or, shiftLeft, shiftRight)
-import Json.Decode as JsonD
-    exposing
-        ( (:=)
-        , Decoder
-        , andThen
-        , customDecoder
-        , decodeString
-        , decodeValue
-        , int
-        , maybe
-        , object1
-        , object2
-        , object3
-        , oneOf
-        , string
-        , value
-        )
-import Json.Encode as JsonE
-    exposing
-        ( Value
-        , encode
-        , int
-        , null
-        , object
-        , string
-        )
+import Json.Decode as JsonD exposing ((:=), Decoder, andThen, customDecoder, decodeString, decodeValue, int, maybe, object1, object2, object3, oneOf, string, value)
+import Json.Encode as JsonE exposing (Value, encode, int, null, object, string)
 import List exposing (foldl)
-import String exposing (left)
-
-
--- OTHER LIBS
-
 import SHA exposing (sha256sum)
+import String exposing (left)
 
 
 {-| Representation of the immutable balanced binary hash tree. You can create
