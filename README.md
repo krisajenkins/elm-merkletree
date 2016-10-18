@@ -9,7 +9,7 @@ is
 but others can be used. Hash functions are specified on initiation and can't be
 changed afterwards which ensures data consistency.
 
-![](../assets/imgs/11trans.png?raw=true)
+![](assets/imgs/11trans.png?raw=true)
 
 Source: [Stack Exchange](http://bitcoin.stackexchange.com/a/30330)
 
