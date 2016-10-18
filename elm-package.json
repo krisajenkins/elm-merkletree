@@ -1,0 +1,17 @@
+{
+    "version": "1.0.0",
+    "summary": "An implementation of the Merkle tree data structure in Elm",
+    "repository": "https://github.com/spisemisu/elm-merkletree.git",
+    "license": "MIT",
+    "source-directories": [
+        "src"
+    ],
+    "exposed-modules": [
+        "Merkle"
+    ],
+    "dependencies": {
+        "elm-lang/core": "4.0.0 <= v < 5.0.0",
+        "spisemisu/elm-sha": "1.0.4 <= v < 2.0.0"
+    },
+    "elm-version": "0.17.0 <= v < 0.18.0"
+}
