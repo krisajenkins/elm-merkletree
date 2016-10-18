@@ -436,7 +436,7 @@ can be modified in the text format.
             (initialize Nothing Json.Encode.int Json.Decode.int)
         |> isValid (Just [ identity ])) == False
 
-> **Note**: If trees imported `fromJson` have both modified `data` and `hash`es
+**Note**: If trees imported `fromJson` have both modified `data` and `hash`es
   consistently, it will not be possible for this function to ensure historic
   consistency but only correctness.
 -}
@@ -485,6 +485,7 @@ breaks). For `Git` alike `hash` mask use `7` and 0 for full `hash`.
         |> toJson 0 7)
 
 Becomes:
+
     {
         "count": 3,
         "hash": "37536cf",
@@ -511,9 +512,9 @@ Becomes:
         }
     }
 
-> **Note**: If data is needed to persist, don't add any mask and ensure that
-    full length is saved. It's important in order to check for data consistency
-    (`isValid`).
+**Note**: If data is needed to persist, don't add any mask and ensure that full
+  length is saved. It's important in order to check for data consistency
+  (`isValid`).
 -}
 toJson : Int -> Int -> Tree a -> String
 toJson indentation mask (Tree { hashfs, encode, decode, bintree }) =

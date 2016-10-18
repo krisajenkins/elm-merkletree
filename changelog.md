@@ -2,7 +2,11 @@
 
 ### Documentation
 
-  * Removed unnecesary test from code file
+  * Removed unnecesary text from code file
+
+  * Removed quote block from `Note`s
+
+  * Fixed `JSON` to be code block instead of text
 
 # 1.0.1
 
