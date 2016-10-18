@@ -74,17 +74,13 @@ type alias Config a =
     }
 
 
-type Tuple a b
-    = Tuple a b
-
-
 type alias Hash =
     String
 
 
 type BinaryTree a
-    = Leaf (Maybe (Tuple a Hash))
-    | Branch (Tuple Int Hash) (BinaryTree a) (BinaryTree a)
+    = Leaf (Maybe ( a, Hash ))
+    | Branch ( Int, Hash ) (BinaryTree a) (BinaryTree a)
 
 
 {-| Initialize an empty (`Merkle.Tree a`) that is bounded to the type assigned
@@ -180,7 +176,7 @@ insert x (Tree ({ hashfs, encode, decode, bintree } as config)) =
                 Leaf _ ->
                     Debug.crash "Don't call hlp with a Leaf"
 
-                Branch (Tuple n h) lb rb ->
+                Branch ( n, h ) lb rb ->
                     case n > 1 && n == m of
                         True ->
                             ( bt
@@ -194,7 +190,7 @@ insert x (Tree ({ hashfs, encode, decode, bintree } as config)) =
                                         Leaf _ ->
                                             1
 
-                                        Branch (Tuple n' _) _ _ ->
+                                        Branch ( n', _ ) _ _ ->
                                             n'
                             in
                                 case ln < i of
@@ -222,9 +218,9 @@ insert x (Tree ({ hashfs, encode, decode, bintree } as config)) =
                         h =
                             hashfs |> combine (stringify x encode)
                     in
-                        (Tuple x h) |> Just |> Leaf
+                        ( x, h ) |> Just |> Leaf
 
-                (Leaf (Just (Tuple _ h))) as leaf ->
+                (Leaf (Just ( _, h ))) as leaf ->
                     let
                         hx =
                             hashfs |> combine (stringify x encode)
@@ -232,9 +228,9 @@ insert x (Tree ({ hashfs, encode, decode, bintree } as config)) =
                         h' =
                             hashfs |> combine (h ++ hx)
                     in
-                        Branch (Tuple 2 h') leaf ((Tuple x hx) |> Just |> Leaf)
+                        Branch ( 2, h' ) leaf (( x, hx ) |> Just |> Leaf)
 
-                (Branch (Tuple n h) lb rb) as branch ->
+                (Branch ( n, h ) lb rb) as branch ->
                     let
                         ( lb', rb' ) =
                             hlp branch m i hashfs encode
@@ -242,7 +238,7 @@ insert x (Tree ({ hashfs, encode, decode, bintree } as config)) =
                         h' =
                             hashHlp h lb' rb' hashfs
                     in
-                        Branch (Tuple (n + 1) h') lb' rb'
+                        Branch ( (n + 1), h' ) lb' rb'
     in
         Tree
             { config
@@ -288,7 +284,7 @@ contains x (Tree ({ hashfs, encode, decode, bintree } as config)) =
                 Leaf Nothing ->
                     False
 
-                Leaf (Just (Tuple data hash)) ->
+                Leaf (Just ( data, hash )) ->
                     x == data
 
                 Branch _ lb rb ->
@@ -325,7 +321,7 @@ get x (Tree ({ hashfs, encode, decode, bintree } as config)) =
                 Leaf Nothing ->
                     []
 
-                Leaf (Just (Tuple data hash)) ->
+                Leaf (Just ( data, hash )) ->
                     case x == data of
                         True ->
                             [ ( data, hash ) ]
@@ -357,7 +353,7 @@ flatten (Tree ({ hashfs, encode, decode, bintree } as config)) =
                 Leaf Nothing ->
                     []
 
-                Leaf (Just (Tuple data hash)) ->
+                Leaf (Just ( data, hash )) ->
                     [ ( data, hash ) ]
 
                 Branch _ lb rb ->
@@ -429,14 +425,14 @@ isValid hash (Tree ({ hashfs, encode, decode, bintree } as config)) =
                 Leaf Nothing ->
                     True
 
-                Leaf (Just (Tuple x h)) ->
+                Leaf (Just ( x, h )) ->
                     let
                         h' =
                             hashfs' |> combine (stringify x encode)
                     in
                         h == h'
 
-                Branch (Tuple n h) lb rb ->
+                Branch ( n, h ) lb rb ->
                     let
                         h' =
                             hashHlp h lb rb hashfs'
@@ -505,13 +501,13 @@ toJson indentation mask (Tree { hashfs, encode, decode, bintree }) =
                 Leaf Nothing ->
                     JsonE.null
 
-                Leaf (Just (Tuple v h)) ->
+                Leaf (Just ( v, h )) ->
                     JsonE.object
                         [ ( "hash", JsonE.string (shortHash h) )
                         , ( "data", encode v )
                         ]
 
-                Branch (Tuple n' h) lb rb ->
+                Branch ( n', h ) lb rb ->
                     JsonE.object
                         [ ( "count", JsonE.int n' )
                         , ( "hash", JsonE.string (shortHash h) )
@@ -614,11 +610,11 @@ initbranch n x hash encode =
                             hb h
 
                         t =
-                            Branch (Tuple 1 h') acc (Nothing |> Leaf)
+                            Branch ( 1, h' ) acc (Nothing |> Leaf)
                     in
                         rec (i - 1) h' t
     in
-        rec n hl ((Tuple x hl) |> Just |> Leaf)
+        rec n hl (( x, hl ) |> Just |> Leaf)
 
 
 init :
@@ -670,7 +666,7 @@ max t =
         Leaf (Just _) ->
             2
 
-        Branch (Tuple n _) _ _ ->
+        Branch ( n, _ ) _ _ ->
             n |> ceilPow
 
 
@@ -682,25 +678,22 @@ hashHlp :
     -> String
 hashHlp h lh rh fs =
     case ( lh, rh ) of
-        ( Leaf (Just (Tuple _ h1)), Leaf (Just (Tuple _ h2)) ) ->
+        ( Leaf (Just ( _, h1 )), Leaf (Just ( _, h2 )) ) ->
             fs |> combine (h1 ++ h2)
 
-        ( Leaf (Just (Tuple _ h1)), Leaf Nothing ) ->
+        ( Leaf (Just ( _, h1 )), Leaf Nothing ) ->
             fs |> combine (h1 ++ h1)
 
-        ( Branch (Tuple _ h1) _ _, Branch (Tuple _ h2) _ _ ) ->
+        ( Branch ( _, h1 ) _ _, Branch ( _, h2 ) _ _ ) ->
             fs |> combine (h1 ++ h2)
 
-        ( Branch (Tuple _ h1) _ _, Leaf (Just (Tuple _ h2)) ) ->
+        ( Branch ( _, h1 ) _ _, Leaf (Just ( _, h2 )) ) ->
             fs |> combine (h1 ++ h2)
 
-        ( Branch (Tuple _ h1) _ _, Leaf Nothing ) ->
+        ( Branch ( _, h1 ) _ _, Leaf Nothing ) ->
             fs |> combine (h1 ++ h1)
 
-        ( Leaf (Just _), Branch _ _ _ ) ->
-            Debug.crash "It shouldn't be possible to reach this branch"
-
-        ( Leaf Nothing, _ ) ->
+        ( Leaf _, _ ) ->
             Debug.crash "It shouldn't be possible to reach this branch"
 
 
@@ -753,7 +746,7 @@ decodeTree decode =
         decodeLeaf =
             JsonD.object1 Leaf
                 (JsonD.maybe
-                    (JsonD.object2 Tuple
+                    (JsonD.object2 (,)
                         ("data" := decode)
                         ("hash" := JsonD.string)
                     )
@@ -761,7 +754,7 @@ decodeTree decode =
 
         decodeBranch =
             JsonD.object3 Branch
-                (JsonD.object2 Tuple
+                (JsonD.object2 (,)
                     ("count" := JsonD.int)
                     ("hash" := JsonD.string)
                 )
