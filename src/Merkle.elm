@@ -39,7 +39,7 @@ changed afterwards which ensures data consistency.
 
 @docs isValid
 
-# Persistence (from and to Json.Value)
+# Persistence
 
 @docs fromJson,toJson
 

@@ -1,3 +1,15 @@
+# 1.0.2
+
+### Documentation
+
+  * Removed unnecesary test from code file
+
+# 1.0.1
+
+### Documentation
+
+  * Named correctly in README.md
+
 # 1.0.0
 
 ### Initial release
