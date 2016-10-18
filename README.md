@@ -1,4 +1,4 @@
-# SHA (Secure Hash Algorithm)
+# Merkle Tree
 
 This is an implemenation of
 the [Merkle tree](https://en.wikipedia.org/wiki/Merkle_tree) data structure in
